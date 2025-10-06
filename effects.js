@@ -1,5 +1,6 @@
-// === Typing Animation (Loop with Blinking Cursor) ===
+// === Typing Animation (Loop with Blinking Cursor + Fade-in Fix) ===
 const roleElement = document.querySelector(".role");
+
 if (roleElement) {
   const texts = [
     "Aspiring Software Engineer",
@@ -7,16 +8,16 @@ if (roleElement) {
     "AI & IoT Enthusiast",
     "Problem Solver",
   ];
+
   let index = 0;
   let charIndex = 0;
   let isDeleting = false;
 
-  // Add blinking cursor
+  // Create cursor element
   const cursor = document.createElement("span");
+  cursor.className = "cursor";
   cursor.textContent = "|";
-  cursor.style.marginLeft = "4px";
-  cursor.style.animation = "blink 0.7s infinite";
-  roleElement.after(cursor);
+  roleElement.insertAdjacentElement("afterend", cursor);
 
   function type() {
     const current = texts[index];
@@ -25,7 +26,7 @@ if (roleElement) {
       charIndex++;
       if (charIndex === current.length) {
         isDeleting = true;
-        setTimeout(type, 1500); // pause before deleting
+        setTimeout(type, 1500);
         return;
       }
     } else {
@@ -39,6 +40,7 @@ if (roleElement) {
     setTimeout(type, isDeleting ? 50 : 100);
   }
 
+  // Start typing
   type();
 }
 
@@ -63,7 +65,10 @@ document.querySelectorAll(".card, .about-card").forEach(card => {
 const toggleBtn = document.getElementById("theme-toggle");
 toggleBtn.addEventListener("click", () => {
   document.body.classList.toggle("light");
-  localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+  localStorage.setItem(
+    "theme",
+    document.body.classList.contains("light") ? "light" : "dark"
+  );
 });
 if (localStorage.getItem("theme") === "light") {
   document.body.classList.add("light");
@@ -79,15 +84,41 @@ skills.forEach(skill => {
     skill.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(184,132,243,0.5), rgba(126,87,194,0.25))`;
   });
   skill.addEventListener("mouseleave", () => {
-    skill.style.background = "linear-gradient(145deg, rgba(184,132,243,0.2), rgba(126,87,194,0.25))";
+    skill.style.background =
+      "linear-gradient(145deg, rgba(184,132,243,0.2), rgba(126,87,194,0.25))";
   });
 });
 
-// === Cursor Blink Animation (CSS via JS) ===
+// === Cursor Blink & Fade Animation (CSS via JS) ===
 const style = document.createElement("style");
 style.textContent = `
+.cursor {
+  display: inline-block;
+  margin-left: 4px;
+  color: #b88aff;
+  font-weight: 600;
+  animation: blink 0.8s infinite;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
-}`;
+}
+
+.role {
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: middle;
+  font-weight: 500;
+  animation: fadeInText 1.2s ease;
+}
+
+@keyframes fadeInText {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+`;
 document.head.appendChild(style);
